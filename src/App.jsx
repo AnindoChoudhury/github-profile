@@ -1,11 +1,6 @@
-import Card from "./component/Card"
-import { GeneralStats } from "./Stats/GeneralStats"
-import { Suspense, useEffect } from "react"
-import axios from "axios"
-import {RecoilRoot} from "recoil"
+import { Suspense } from "react"
 import "./App.css"
 import { lazy } from "react"
-import {Input} from "./component/Input"
 import { BrowserRouter,Routes,Route } from "react-router-dom"
 const RenderStatsPage = lazy(()=>import("./pages/RenderStatsPage"))
 const InputPage = lazy(()=>import("./pages/InputPage"))
