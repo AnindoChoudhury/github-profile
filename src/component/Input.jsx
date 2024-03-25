@@ -1,12 +1,14 @@
 import { usernameAtom } from "../store/input"
-import {useSetRecoilState,useRecoilValue} from "recoil"
+import {useSetRecoilState,useRecoilValueLoadable} from "recoil"
 import {useNavigate} from "react-router-dom"
+import { responseAtomFamily } from "../store/APIResponse"
 import { useCallback,memo } from "react"
 export function Input()
 {
     const navigate = useNavigate()
     const setUsername = useSetRecoilState(usernameAtom)
-    const handleSubmit = useCallback(()=>
+
+    const handleSubmit = useCallback(async()=>
     {
         navigate("/stats")
     },[])

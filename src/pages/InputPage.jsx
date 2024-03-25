@@ -1,5 +1,5 @@
 import { RecoilRoot } from "recoil"
-import {Input,Button} from "../component/Input"
+import {Input} from "../component/Input"
 
 
 export default function InputPage()
