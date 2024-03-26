@@ -8,12 +8,22 @@ export const responseAtomFamily = atomFamily({
             try
             {
               const res = await axios.get(`https://api.github.com/users/${id}`)
+            //   console.log(res.data.name);
               return res.data
             }
             catch(err)
             {
-                return err; 
+                console.log("Username doesn't exist")
             }
-        }
+        } 
     })
 })
+
+// export const propertySelectorFamily=selectorFamily({
+//     key : "propertySelector", 
+//     get : (id)=>({get})=>
+//     {
+//         const property = get(responseAtomFamily());
+//         return property[id];
+//     }
+// })
