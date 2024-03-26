@@ -1,21 +1,28 @@
 import Card from "../component/Card"
 import { GeneralStats } from "../Stats/GeneralStats";
-import { RecoilRoot, useRecoilValue} from "recoil";
+import {  useRecoilValue} from "recoil";
 import Topbar from "../section/Topbar";
 import { responseAtomFamily } from "../store/APIResponse";
-import { usernameAtom } from "../store/input";
-import { useEffect } from "react";
+import { useContext } from "react";
 import Picture from "../component/Picture";
+import UsernameContext from "../context/UsernameContext";
 export default function RenderStatsPage()
 {
-  const username = useRecoilValue(usernameAtom);
-
-  const response = useRecoilValue(responseAtomFamily(username)) || undefined
+  
+  const {username} = useContext(UsernameContext)
+  const response = useRecoilValue(responseAtomFamily(username)) || useRecoilValue(responseAtomFamily("AnindoChoudhury"))
+  if(response)
   return(
-    <div className="flex items-center gap-10 flex-col pt-0">
-      <RecoilRoot><Topbar/></RecoilRoot>
-      {/* <Picture url={response["avatar_url"]}/> */}
-      {/* <h2 className="text-xl">{response.name || "Anin"}</h2> */}
+    <div className="bg-[#03001C] h-[100vh] flex items-center gap-10 flex-col pt-0">
+      <Topbar/>
+        <Picture url={response["avatar_url"]}/>
+        <div className="text-white flex flex-col items-center">
+        <h2 className="text-xl">{response["name"]}</h2>
+        <p>{response["bio"]}</p>
+        </div>
       <Card cardContent={<GeneralStats/>}/>
     </div>)
+    return(
+         <Topbar/>
+    )
 }

@@ -1,28 +1,23 @@
 import {useRecoilState,useRecoilValue, useRecoilValueLoadable} from "recoil"
 import {useNavigate} from "react-router-dom"
 import {usernameAtom} from "../store/input"
-import { useCallback,memo,useRef, useEffect } from "react"
+import { useCallback,memo,useRef, useEffect, useContext } from "react"
 import { responseAtomFamily } from "../store/APIResponse"
+import UsernameContext from "../context/UsernameContext"
 export function Input()
 {
     const navigate = useNavigate()
     const inputRef = useRef(null);
-    const [username,setUsername] = useRecoilState(usernameAtom);
-    let response; 
+    const {username,setUsername} = useContext(UsernameContext)
    
-    response = useRecoilValue(responseAtomFamily(username))
-    useEffect(()=>
-    {
-        console.log(username);
-    },[username])
     const handleSubmit = useCallback(()=>
     {
         setUsername(inputRef.current.value)
         // Wrapping it in async function, so that the setUsername resolves first 
-        // setTimeout(()=>
-        // {   
-        //     navigate("/stats")
-        // },0)
+        setTimeout(()=>
+        {   
+            navigate("/stats")
+        },0)
     },[])
     
     return(

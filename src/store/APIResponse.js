@@ -8,7 +8,6 @@ export const responseAtomFamily = atomFamily({
             try
             {
               const res = await axios.get(`https://api.github.com/users/${id}`)
-            //   console.log(res.data.name);
               return res.data
             }
             catch(err)
