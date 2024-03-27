@@ -18,11 +18,3 @@ export const responseAtomFamily = atomFamily({
     })
 })
 
-// export const propertySelectorFamily=selectorFamily({
-//     key : "propertySelector", 
-//     get : (id)=>({get})=>
-//     {
-//         const property = get(responseAtomFamily());
-//         return property[id];
-//     }
-// })
