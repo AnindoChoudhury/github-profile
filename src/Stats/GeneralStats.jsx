@@ -2,22 +2,24 @@ export function GeneralStats({generalInformation})
 {
   return(
     <>
-         <div className="grid grid-cols-2">
+         <div className="grid text-center grid-cols-2">
           <div>
-            <h1 className="text-[1.5rem]">
+            <h1 className="text-4xl">{generalInformation.follower}</h1>
+            <h1 className="text-[0.9rem]">
                Followers
             </h1>
-            <h2 className="text-2xl">{generalInformation.follower}</h2>
           </div>
           <div>
-            <h1 className="text-[1.5rem]">
+        
+            <h1 className="text-4xl">{generalInformation.following}</h1>
+            <h1 className="text-[0.9rem]">
                Following
             </h1>
-            <p className="text-2xl">{generalInformation.following}</p>
+          
           </div>
-           <div className="grid col-span-2">
+           <div className="mt-6 grid col-span-2">
              <h2 className="text-[1.2rem]">
-                Starred repos : 
+                Starred repos : {generalInformation.starredRepos}
              </h2>
              <h2 className="text-[1.2rem]">
                 Public repos : {generalInformation.publicRepos}

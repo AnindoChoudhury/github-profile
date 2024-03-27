@@ -21,7 +21,7 @@ export default function App()
                </Suspense>}>
             </Route>
             <Route path="/stats" element={
-               <Suspense fallback="loading...">
+               <Suspense fallback="loading stats page...">
                  <RecoilRoot>
                   <UsernameContextProvider>
                       <RenderStatsPage/>

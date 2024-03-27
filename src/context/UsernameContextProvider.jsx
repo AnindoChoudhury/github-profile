@@ -11,7 +11,7 @@ const UsernameContextProvider = ({children})=>
     return(
     <UsernameContext.Provider value={{username,setUsername}}>
          {children}
-    </UsernameContext.Provider>)
+    </UsernameContext.Provider>)    
 }
 
 export default UsernameContextProvider

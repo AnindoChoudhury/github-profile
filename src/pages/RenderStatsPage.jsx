@@ -6,32 +6,35 @@ import { responseAtomFamily } from "../store/APIResponse";
 import { useContext,useMemo } from "react";
 import Picture from "../component/Picture";
 import UsernameContext from "../context/UsernameContext";
+import { starredRepoAtomFamily } from "../store/APIResponse";
 export default function RenderStatsPage()
 {
   
   const {username} = useContext(UsernameContext)
-  const response = useRecoilValue(responseAtomFamily(username)) || useRecoilValue(responseAtomFamily("AnindoChoudhury"))
-
+  const response = useRecoilValue(responseAtomFamily(username)) || useRecoilValue(responseAtomFamily("AnindoChoudhury")) 
+  const starred = useRecoilValue(starredRepoAtomFamily(username)) || useRecoilValue(starredRepoAtomFamily("AnindoChoudhury"));
   const generalInformation = useMemo(()=>
   {
     return {
-      follower : response["followers"], 
-      following : response["following"], 
-      publicRepos : response["public_repos"],
-      
+      follower : response["followers"] , 
+      following : response["following"] , 
+      publicRepos : response["public_repos"] ,
+      starredRepos : starred.length,
+
     }
   },[response])
 
   if(response)
   return(
-    <div className="bg-[#03001C] h-[100vh] flex items-center gap-10 flex-col pt-0">
-      <Topbar/>
+    <div className="renderStatsPage flex pb-10 items-center gap-10 flex-col pt-0">
+      <Topbar/>  
         <Picture url={response["avatar_url"]}/>
         <div className="text-white w-[75%] flex flex-col items-center">
         <h2 className="text-xl pb-2">{response["name"]}</h2>
         <p className="text-center">{response["bio"]}</p>
         </div>
       <Card cardContent={<GeneralStats generalInformation={generalInformation}/>}/>
+      
     </div>)
     return(
          <Topbar/>
