@@ -24,6 +24,12 @@ export function GeneralStats({generalInformation})
              <h2 className="text-[1.2rem]">
                 Public repos : {generalInformation.publicRepos}
              </h2>
+             
+           </div>
+           <div className="grid col-span-2 mt-6">
+           <p className="text-[0.9rem]">
+               Pushing code since {generalInformation.createdAt}
+               </p>
            </div>
          </div>
     </>
