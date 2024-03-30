@@ -2,7 +2,6 @@ import {atomFamily, selectorFamily} from "recoil"
 import axios from "axios"
 import {token} from "../../config.js"
 
-
 export const responseAtomFamily = atomFamily({
     key : "responseAtomFamily",
     default : selectorFamily({
