@@ -12,7 +12,7 @@ export default function RenderStatsPage()
   const {username} = useContext(UsernameContext)
   const response = useRecoilValue(responseAtomFamily({
     username : username, 
-  })) || useRecoilValue(responseAtomFamily("AnindoChoudhury")) 
+  })) || useRecoilValue(responseAtomFamily({username : "AnindoChoudhury"})) 
 
   // Number of collabs
   const collabs = response.contributionsCollection.commitContributionsByRepository.filter((item)=>(item.repository.owner.login!==username)).length; 
@@ -28,7 +28,7 @@ export default function RenderStatsPage()
   // Number of issues
   const issues = response.contributionsCollection.totalIssueContributions
 
- 
+  // Number of merged pull requests 
 
   const author = ()=>
   (

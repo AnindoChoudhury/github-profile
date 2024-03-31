@@ -18,9 +18,7 @@ export function GeneralStats({generalInformation})
           
           </div>
            <div className="mt-6 grid col-span-2">
-             <h2 className="text-[1.2rem]">
-                Starred repos : {generalInformation.starredRepos}
-             </h2>
+           
              <h2 className="text-[1.2rem]">
                 Public repos : {generalInformation.publicRepos}
              </h2>

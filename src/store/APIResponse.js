@@ -9,8 +9,14 @@ export const responseAtomFamily = atomFamily({
         get : (id)=>async()=>{
             try
             {
+                let endCursor=null; 
+                let hasNextPage=true; 
+                let res; 
+                let allPullRequests = []
+                while(hasNextPage)
+                {
                 const overviewBody = {
-                    query: `query {
+                    query: `query{
                         user(login: "${id.username}") {
                           avatarUrl
                           bio
@@ -55,7 +61,7 @@ export const responseAtomFamily = atomFamily({
                                 }
                               }
                             }
-                            pullRequestContributions(first: 10) {
+                            pullRequestContributions(first: 10, after : "${endCursor}") {
                               edges {
                                 node {
                                   pullRequest {
@@ -65,6 +71,10 @@ export const responseAtomFamily = atomFamily({
                                     merged
                                   }
                                 }
+                              }
+                              pageInfo{
+                                hasNextPage
+                                endCursor
                               }
                             }
                             issueContributions(first: 2) {
@@ -118,6 +128,10 @@ export const responseAtomFamily = atomFamily({
                               }
                             }
                           }
+                          pageInfo{
+                            hasNextPage
+                            endCursor
+                          }
                         }
                         issueContributions(first: 2) {
                           edges {
@@ -128,6 +142,7 @@ export const responseAtomFamily = atomFamily({
                               }
                             }
                           }
+                         
                         }
                       }
                     }
@@ -139,8 +154,13 @@ export const responseAtomFamily = atomFamily({
                 Authorization : `Bearer ${token}`
                 }
               }
-               const res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
-              console.log(res.data.data.user);
+                res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
+              allPullRequests = allPullRequests.concat(res.data.data.user.contributionsCollection.pullRequestContributions.edges);
+              endCursor = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.endCursor
+              hasNextPage = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.hasNextPage
+            }
+              res.data.data.user.contributionsCollection.pullRequestContributions.edges = allPullRequests
+              console.log(res.data.data.user)
               return res.data.data.user
             }
             catch(err)
