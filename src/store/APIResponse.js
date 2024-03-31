@@ -9,9 +9,9 @@ export const responseAtomFamily = atomFamily({
         get : (id)=>async()=>{
             try
             {
-                const body = {
-                    "query": `query {
-                        user(login: "${id}") {
+                const overviewBody = {
+                    query: `query {
+                        user(login: "${id.username}") {
                           avatarUrl
                           bio
                           name
@@ -43,8 +43,40 @@ export const responseAtomFamily = atomFamily({
                             }
                           }
                           contributionsCollection {
+                            totalCommitContributions
+                            totalRepositoryContributions
                             totalIssueContributions
                             totalPullRequestContributions
+                            commitContributionsByRepository {
+                              repository {
+                                name
+                                owner{
+                                    login
+                                }
+                              }
+                            }
+                            pullRequestContributions(first: 10) {
+                              edges {
+                                node {
+                                  pullRequest {
+                                    title
+                                    createdAt
+                                    mergedAt
+                                    merged
+                                  }
+                                }
+                              }
+                            }
+                            issueContributions(first: 2) {
+                              edges {
+                                node {
+                                  issue {
+                                    title
+                                    createdAt
+                                  }
+                                }
+                              }
+                            }
                             contributionCalendar {
                               totalContributions
                               months {
@@ -52,17 +84,62 @@ export const responseAtomFamily = atomFamily({
                                 totalWeeks
                                 firstDay
                                 year
-                                
                               }
                             }
                           }
-                        }}`}
-              const res = await axios.post(`https://api.github.com/graphql`,JSON.stringify(body), {
-               headers:{
+                        }
+                      }`}
+
+
+              const contributionsBody = {
+                query : `query{
+                    user(login: "${id.username}") {
+                      contributionsCollection(
+                        from: "${id.startDate}"
+                        to: "${id.endDate}"
+                      ){
+                        totalCommitContributions
+                        totalRepositoryContributions
+                        totalIssueContributions
+                        totalPullRequestContributions
+                        commitContributionsByRepository {
+                          repository {
+                            name
+                          }
+                        }
+                        pullRequestContributions(first: 10) {
+                          edges {
+                            node {
+                              pullRequest {
+                                title
+                                createdAt
+                                mergedAt
+                                merged
+                              }
+                            }
+                          }
+                        }
+                        issueContributions(first: 2) {
+                          edges {
+                            node {
+                              issue {
+                                title
+                                createdAt
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }`
+              }
+              const headersBody = {
+                headers : {
                 "Content-Type" : "application/json",
                 Authorization : `Bearer ${token}`
-               } 
-              })
+                }
+              }
+               const res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
               console.log(res.data.data.user);
               return res.data.data.user
             }
