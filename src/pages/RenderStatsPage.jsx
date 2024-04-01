@@ -30,13 +30,60 @@ export default function RenderStatsPage()
 
   const pullRequestArray = response.contributionsCollection.pullRequestContributions.edges
 
-  // Number of merged pull requests 
-  const merged = pullRequestArray.filter((item)=>(item.node.pullRequest.merged)).length
+  // Number of merged pull requests
+  let merged, firstMerge 
+  if(pullRequestArray.length)
+  {
+    merged = pullRequestArray.filter((item)=>(item.node?.pullRequest?.merged)).length
  
- const firstMerge = pullRequestArray[pullRequestArray.length-1].node.pullRequest.createdAt
+   firstMerge = new Date(pullRequestArray[pullRequestArray.length-1].node?.pullRequest?.createdAt).toLocaleString("en-IN");
+  }
+  else 
+  {
+    merged = 0;
+    firstMerge = "Invalid"
+  }
+
+  const repoArray = response.repositories.edges
+ // Max Starred Repo 
+ const maxStarred = repoArray.reduce((acc,item)=>(acc.node.stargazerCount>item.node.stargazerCount?acc : item)); 
+ const maxStarredRepo = maxStarred.node.name; 
+ 
+//  Primary language 
+const map=new Map(); 
+
+// Iterates over the repo array containg object (which contains details about the repo including the primary language)
+for(const item of repoArray)
+ {
+       let primaryLanguageName
+       if(item.node.primaryLanguage)  // If primary language exists, set primaryLanguageName
+       {  
+          primaryLanguageName = item.node.primaryLanguage.name 
+       }
+
+       // If the repo isn't forked & primary language exists, create a key value pair. For example 
+       // Js => 3, where key is the language and value is the number of Repositories it has been used in
+       if(!item.node.isFork && primaryLanguageName) 
+       { 
+        map.set(primaryLanguageName,map.get(primaryLanguageName)+1 || +!Boolean(map.get(primaryLanguageName)))
+       }
+ }
+ console.log(map)
+ // Find out the maximum value, and print its key
+ let maxUsage=0, maxUsedLanguage; 
+ for(const item of map.entries())
+ {
+    if(item[1]>maxUsage)
+    {
+      maxUsage = item[1]
+      maxUsedLanguage = item[0]
+    }
+ }
+ console.log(maxUsedLanguage)
+ 
   const author = ()=>
   (
-    username==="AnindoChoudhury"? " (author)" : ""
+    username==="AnindoChoudury"? " (author)" : ""
   )
 
   const generalInformation = useMemo(()=>
@@ -56,7 +103,8 @@ export default function RenderStatsPage()
       numberOfCommits : commits, 
       numberOfIssues : issues, 
       merged : merged, 
-      firstMerge : new Date(firstMerge).toLocaleString("en-IN")
+      firstMerge : firstMerge, 
+      maxStarred : maxStarredRepo
     }
   },[response])
   

@@ -45,17 +45,14 @@ export const responseAtomFamily = atomFamily({
                               node {
                                 id
                                 name
+                                isFork
                                 isPrivate
                                 viewerHasStarred
                                 stargazerCount
                                 primaryLanguage {
                                   name
                                 }
-                                pullRequests(first: 1, orderBy: {field: CREATED_AT, direction: ASC}) {
-                                  nodes {
-                                    createdAt
-                                  }
-                                }
+                               
                               }
                             }
                             pageInfo{
