@@ -9,15 +9,26 @@ export const responseAtomFamily = atomFamily({
         get : (id)=>async()=>{
             try
             {
-                let endCursor=null; 
-                let hasNextPage=true; 
+              // Points to the last item of a page, contains a string
+                let pullRequestEndCursor=null; 
+             //  returns a boolean value, true if more page exist after the current page, else false, in this app's case, each page contains 10 pull requests OR it fetches 10 pull requests at one hit
+                let pullRequestHasNextPage=true; 
                 let res; 
+              
+            //  Concatenates all pull requests into this array, then at the end mutates the original response with this array, so that the original response contains all pull requests. 
                 let allPullRequests = []
-                while(hasNextPage)
+
+                let repoEndCursor=null;  
+                let repoHasNextPage=true
+                let allRepo =[]
+
+              // Wrapped in a while loop, under the condition that next page exists, in Line 70, after : pullRequestEndCursor means that, it will fetch from the pull requests after the endCursor  
+                while(pullRequestHasNextPage || repoHasNextPage)
                 {
+                  const username = id.username; 
                 const overviewBody = {
                     query: `query{
-                        user(login: "${id.username}") {
+                        user(login: "${username}") {
                           avatarUrl
                           bio
                           name
@@ -28,7 +39,7 @@ export const responseAtomFamily = atomFamily({
                           following {
                             totalCount
                           }
-                          repositories(first: 1) {
+                          repositories(first: 100, after: ${repoEndCursor}) {
                             totalCount
                             edges {
                               node {
@@ -47,6 +58,10 @@ export const responseAtomFamily = atomFamily({
                                 }
                               }
                             }
+                            pageInfo{
+                              hasNextPage
+                              endCursor
+                            }
                           }
                           contributionsCollection {
                             totalCommitContributions
@@ -61,7 +76,7 @@ export const responseAtomFamily = atomFamily({
                                 }
                               }
                             }
-                            pullRequestContributions(first: 10, after : "${endCursor}") {
+                            pullRequestContributions(first: 100, after:"${pullRequestEndCursor}") {
                               edges {
                                 node {
                                   pullRequest {
@@ -155,11 +170,27 @@ export const responseAtomFamily = atomFamily({
                 }
               }
                 res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
-              allPullRequests = allPullRequests.concat(res.data.data.user.contributionsCollection.pullRequestContributions.edges);
-              endCursor = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.endCursor
-              hasNextPage = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.hasNextPage
+                console.log(res.data);
+             if(pullRequestHasNextPage)
+                  {
+                    allPullRequests = allPullRequests.concat(res.data.data.user.contributionsCollection.pullRequestContributions.edges)
+
+                    pullRequestEndCursor = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.endCursor
+
+                    pullRequestHasNextPage = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.hasNextPage
+                  }
+
+              if(repoHasNextPage)
+              {
+                allRepo = allRepo.concat(res.data.data.user.repositories.edges)
+
+                repoHasNextPage = res.data.data.user.repositories.pageInfo.hasNextPage
+
+              repoEndCursor = `"${res.data.data.user.repositories.pageInfo.endCursor.split("").filter((item)=>(item!=='=')).join("")}"`
+              }
             }
               res.data.data.user.contributionsCollection.pullRequestContributions.edges = allPullRequests
+              res.data.data.user.repositories.edges = allRepo
               console.log(res.data.data.user)
               return res.data.data.user
             }
@@ -170,3 +201,9 @@ export const responseAtomFamily = atomFamily({
         } 
     })
 })
+
+
+
+
+
+

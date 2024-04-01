@@ -28,8 +28,12 @@ export default function RenderStatsPage()
   // Number of issues
   const issues = response.contributionsCollection.totalIssueContributions
 
-  // Number of merged pull requests 
+  const pullRequestArray = response.contributionsCollection.pullRequestContributions.edges
 
+  // Number of merged pull requests 
+  const merged = pullRequestArray.filter((item)=>(item.node.pullRequest.merged)).length
+ 
+ const firstMerge = pullRequestArray[pullRequestArray.length-1].node.pullRequest.createdAt
   const author = ()=>
   (
     username==="AnindoChoudhury"? " (author)" : ""
@@ -51,6 +55,8 @@ export default function RenderStatsPage()
       numberOfPullRequests : pullRequests, 
       numberOfCommits : commits, 
       numberOfIssues : issues, 
+      merged : merged, 
+      firstMerge : new Date(firstMerge).toLocaleString("en-IN")
     }
   },[response])
   

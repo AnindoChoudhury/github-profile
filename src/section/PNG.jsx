@@ -12,8 +12,10 @@ export default function PNG({generalInformation})
         <h1>Repos : {generalInformation.publicRepos}</h1>
         <h1>Collabs : {generalInformation.collabs}</h1>
         <h1>Commits : {generalInformation.numberOfCommits}</h1>
-        <h1>Pull Requests : {generalInformation.numberOfPullRequests}</h1>
         <h1>Issues : {generalInformation.numberOfIssues}</h1>
+        <h1>Merged : {generalInformation.merged}</h1>
+        <h1>First merge : {generalInformation.firstMerge}</h1>
+
         <img src={generalInformation.contributionsGraph} className="opacity-[1]" alt="Name Your Github chart"/>
 
     </div>
