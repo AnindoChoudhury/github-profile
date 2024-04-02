@@ -14,23 +14,29 @@ export default function RenderStatsPage()
     username : username, 
   })) || useRecoilValue(responseAtomFamily({username : "AnindoChoudhury"})) 
 
-  // Number of collabs
+  let dateSpecificResponse
+  
+  // Number of collabs (need to be fixed)
   const collabs = response.contributionsCollection.commitContributionsByRepository.filter((item)=>(item.repository.owner.login!==username)).length; 
 
   // const collabNames = response.contributionsCollection.commitContributionsByRepository.map((item)=>{if(item.repository.owner.login!==username) return item.repository.name}).join(" "); 
 
-  // Number of PRs 
+  // account creation date 
+  const accountCreationDate = response.createdAt
+
+  // Number of PRs (need to be fixed)
   const pullRequests = response.contributionsCollection.totalPullRequestContributions
 
-  // Number of commits
+  // Number of commits (need to be fixed)
   const commits = response.contributionsCollection.totalCommitContributions
 
-  // Number of issues
+  // Number of issues (need to be fixed)
   const issues = response.contributionsCollection.totalIssueContributions
 
-  const pullRequestArray = response.contributionsCollection.pullRequestContributions.edges
 
-  // Number of merged pull requests
+  const pullRequestArray = response.contributionsCollection.pullRequestContributions.edges // (to be fixed)
+
+  // Number of merged pull requests (need to be fixed)
   let merged, firstMerge 
   if(pullRequestArray.length)
   {
@@ -50,7 +56,7 @@ export default function RenderStatsPage()
  const maxStarredRepo = maxStarred.node.name; 
  
 //  Primary language 
-const map=new Map(); 
+const languageMap=new Map(); 
 
 // Iterates over the repo array containg object (which contains details about the repo including the primary language)
 for(const item of repoArray)
@@ -65,22 +71,49 @@ for(const item of repoArray)
        // Js => 3, where key is the language and value is the number of Repositories it has been used in
        if(!item.node.isFork && primaryLanguageName) 
        { 
-        map.set(primaryLanguageName,map.get(primaryLanguageName)+1 || +!Boolean(map.get(primaryLanguageName)))
+        languageMap.set(primaryLanguageName,languageMap.get(primaryLanguageName)+1 || 1)
        }
  }
- console.log(map)
+ console.log(languageMap)
  // Find out the maximum value, and print its key
- let maxUsage=0, maxUsedLanguage; 
- for(const item of map.entries())
+ const mostActiveFunction = (map,maxValue)=>
  {
-    if(item[1]>maxUsage)
-    {
-      maxUsage = item[1]
-      maxUsedLanguage = item[0]
-    }
+  let maxKey
+  for(const item of map.entries())
+  {
+     if(item[1]>maxValue)
+     {
+       maxValue = item[1]
+       maxKey = item[0]
+     }
+  }
+  return maxKey; 
  }
- console.log(maxUsedLanguage)
+ const maxUsedLanguage = mostActiveFunction(languageMap,0); 
+ console.log(maxUsedLanguage || "NA")
  
+ // Most active year 
+ const mostActiveYearMap = new Map()
+ const repoCommitsArray = response.contributionsCollection.commitContributionsByRepository
+ const creationYear = new Date(accountCreationDate).getFullYear()
+ const currentYear = new Date().getFullYear()
+ for(let i = creationYear; i<=currentYear; i++)
+ {
+   dateSpecificResponse = useRecoilValue(responseAtomFamily({
+    username : username, 
+    startDate : `${i}-01-01T00:00:00+05:30`,
+    endDate : `${i}-12-31T23:59:00+05:30`
+   }))
+ }
+
+
+
+
+
+
+
+
+
   const author = ()=>
   (
     username==="AnindoChoudury"? " (author)" : ""
@@ -96,7 +129,7 @@ for(const item of repoArray)
       follower : response.followers.totalCount , 
       following : response.following.totalCount , 
       publicRepos : response.repositories.totalCount ,
-      createdAt : new Date(response["createdAt"]).toLocaleString("en-IN"), 
+      createdAt : new Date(accountCreationDate).toLocaleString("en-IN"), 
       name : response.name,
       collabs : collabs,
       numberOfPullRequests : pullRequests, 
@@ -104,7 +137,8 @@ for(const item of repoArray)
       numberOfIssues : issues, 
       merged : merged, 
       firstMerge : firstMerge, 
-      maxStarred : maxStarredRepo
+      maxStarred : maxStarredRepo,
+      maxUsedLanguage : maxUsedLanguage || "NA", 
     }
   },[response])
   

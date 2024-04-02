@@ -16,6 +16,7 @@ export default function PNG({generalInformation})
         <h1>Merged : {generalInformation.merged}</h1>
         <h1>First merge : {generalInformation.firstMerge}</h1>
         <h1>Max Starred : {generalInformation.maxStarred}</h1>
+        <h1>Max used Language : {generalInformation.maxUsedLanguage}</h1>
         <img src={generalInformation.contributionsGraph} className="opacity-[1]" alt="Name Your Github chart"/>
 
     </div>

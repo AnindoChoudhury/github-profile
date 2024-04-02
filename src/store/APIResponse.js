@@ -18,12 +18,18 @@ export const responseAtomFamily = atomFamily({
             //  Concatenates all pull requests into this array, then at the end mutates the original response with this array, so that the original response contains all pull requests. 
                 let allPullRequests = []
 
-                let repoEndCursor=null;  
-                let repoHasNextPage=true
+
+                let repoEndCursor=null
+                let repoHasNextPage = id.startDate || id.endDate?false:true
                 let allRepo =[]
 
+
+                let issueEndCursor= null
+                let issueHasNextPage = true
+                let allIssue = []
+
               // Wrapped in a while loop, under the condition that next page exists, in Line 70, after : pullRequestEndCursor means that, it will fetch from the pull requests after the endCursor  
-                while(pullRequestHasNextPage || repoHasNextPage)
+                while(pullRequestHasNextPage || repoHasNextPage || issueHasNextPage)
                 {
                   const username = id.username; 
                 const overviewBody = {
@@ -71,6 +77,7 @@ export const responseAtomFamily = atomFamily({
                                 owner{
                                     login
                                 }
+                                createdAt
                               }
                             }
                             pullRequestContributions(first: 100, after:"${pullRequestEndCursor}") {
@@ -89,7 +96,7 @@ export const responseAtomFamily = atomFamily({
                                 endCursor
                               }
                             }
-                            issueContributions(first: 2) {
+                            issueContributions(first: 100, after:"${issueEndCursor}") {
                               edges {
                                 node {
                                   issue {
@@ -97,6 +104,10 @@ export const responseAtomFamily = atomFamily({
                                     createdAt
                                   }
                                 }
+                              }
+                              pageInfo{
+                                endCursor
+                                hasNextPage
                               }
                             }
                             contributionCalendar {
@@ -129,7 +140,7 @@ export const responseAtomFamily = atomFamily({
                             name
                           }
                         }
-                        pullRequestContributions(first: 10) {
+                        pullRequestContributions(first: 100, after:"${pullRequestEndCursor}") {
                           edges {
                             node {
                               pullRequest {
@@ -145,7 +156,7 @@ export const responseAtomFamily = atomFamily({
                             endCursor
                           }
                         }
-                        issueContributions(first: 2) {
+                        issueContributions(first: 100, after:"${issueEndCursor}") {
                           edges {
                             node {
                               issue {
@@ -155,6 +166,11 @@ export const responseAtomFamily = atomFamily({
                             }
                           }
                          
+                          pageInfo{
+                            hasNextPage
+                            endCursor
+                          }
+
                         }
                       }
                     }
@@ -166,7 +182,7 @@ export const responseAtomFamily = atomFamily({
                 Authorization : `Bearer ${token}`
                 }
               }
-                res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
+      res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
                 console.log(res.data);
              if(pullRequestHasNextPage)
                   {
@@ -176,8 +192,8 @@ export const responseAtomFamily = atomFamily({
 
                     pullRequestHasNextPage = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.hasNextPage
                   }
-
-              if(repoHasNextPage)
+                  
+              if(repoHasNextPage && !id.startDate && !id.endDate)
               {
                 allRepo = allRepo.concat(res.data.data.user.repositories.edges)
 
@@ -185,9 +201,20 @@ export const responseAtomFamily = atomFamily({
 
               repoEndCursor = `"${res.data.data.user.repositories.pageInfo.endCursor.split("").filter((item)=>(item!=='=')).join("")}"`
               }
+
+              if(issueHasNextPage)
+              {
+                allIssue = allIssue.concat(res.data.data.user.contributionsCollection.issueContributions.edges)
+                issueEndCursor = res.data.data.user.contributionsCollection.issueContributions.pageInfo.endCursor
+                issueHasNextPage = res.data.data.user.contributionsCollection.issueContributions.pageInfo.hasNextPage
+              }
             }
               res.data.data.user.contributionsCollection.pullRequestContributions.edges = allPullRequests
-              res.data.data.user.repositories.edges = allRepo
+              if(!id.startDate && !id.endDate)
+              {
+                res.data.data.user.repositories.edges = allRepo
+              }
+              res.data.data.user.contributionsCollection.issueContributions.edges = allIssue
               console.log(res.data.data.user)
               return res.data.data.user
             }
