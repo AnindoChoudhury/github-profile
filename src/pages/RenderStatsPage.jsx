@@ -16,7 +16,7 @@ export default function RenderStatsPage()
 
   let dateSpecificResponse
   
-  // Number of collabs (need to be fixed)
+  // Number of collabs (contains 1 year data)
   const collabs = response.contributionsCollection.commitContributionsByRepository.filter((item)=>(item.repository.owner.login!==username)).length; 
 
   // const collabNames = response.contributionsCollection.commitContributionsByRepository.map((item)=>{if(item.repository.owner.login!==username) return item.repository.name}).join(" "); 
@@ -24,19 +24,19 @@ export default function RenderStatsPage()
   // account creation date 
   const accountCreationDate = response.createdAt
 
-  // Number of PRs (need to be fixed)
+  // Number of PRs (contains 1 year data)
   const pullRequests = response.contributionsCollection.totalPullRequestContributions
 
-  // Number of commits (need to be fixed)
+  // Number of commits (contains 1 year data)
   const commits = response.contributionsCollection.totalCommitContributions
 
-  // Number of issues (need to be fixed)
+  // Number of issues (contains 1 year data)
   const issues = response.contributionsCollection.totalIssueContributions
 
 
-  const pullRequestArray = response.contributionsCollection.pullRequestContributions.edges // (to be fixed)
+  const pullRequestArray = response.contributionsCollection.pullRequestContributions.edges // (contains 1 year data)
 
-  // Number of merged pull requests (need to be fixed)
+  // Number of merged pull requests (contains 1 year data)
   let merged, firstMerge 
   if(pullRequestArray.length)
   {
@@ -76,9 +76,9 @@ for(const item of repoArray)
  }
  console.log(languageMap)
  // Find out the maximum value, and print its key
- const mostActiveFunction = (map,maxValue)=>
+ const mostActiveFunction = (map)=>
  {
-  let maxKey
+  let maxKey, maxValue = 0; 
   for(const item of map.entries())
   {
      if(item[1]>maxValue)
@@ -87,29 +87,46 @@ for(const item of repoArray)
        maxKey = item[0]
      }
   }
-  return maxKey; 
+  return [maxKey,maxValue]; 
  }
- const maxUsedLanguage = mostActiveFunction(languageMap,0); 
+ const maxUsedLanguage = mostActiveFunction(languageMap); 
  console.log(maxUsedLanguage || "NA")
  
- // Most active year 
- const mostActiveYearMap = new Map()
- const repoCommitsArray = response.contributionsCollection.commitContributionsByRepository
- const creationYear = new Date(accountCreationDate).getFullYear()
- const currentYear = new Date().getFullYear()
- for(let i = creationYear; i<=currentYear; i++)
- {
-   dateSpecificResponse = useRecoilValue(responseAtomFamily({
-    username : username, 
-    startDate : `${i}-01-01T00:00:00+05:30`,
-    endDate : `${i}-12-31T23:59:00+05:30`
-   }))
- }
+// Most productive month 
 
+const weeks = response.contributionsCollection.contributionCalendar.weeks
 
+const mostProductiveMonthMap = new Map(); 
+const mostProductiveDayMap = new Map(); 
+const mostProductiveDateMap = new Map(); 
+weeks.forEach((eachWeek)=>
+{
+    eachWeek.contributionDays.forEach((day)=>
+    {
+      if(day.contributionCount)
+      {
+        const date = new Date(day.date)
+        const month = date.toLocaleString("en-IN",{month : "long"})
+        const weekday = date.toLocaleString("en-IN",{weekday : "long"})
+        
+        mostProductiveMonthMap.set(month,mostProductiveMonthMap.get(month)+day.contributionCount || day.contributionCount)
+        mostProductiveDayMap.set(weekday,mostProductiveDayMap.get(weekday)+day.contributionCount || day.contributionCount)
+        mostProductiveDateMap.set(date,day.contributionCount)
+      }
+    })
+})
 
+console.log(mostProductiveMonthMap)
+console.log(mostProductiveDayMap)
+console.log(mostProductiveDateMap)
 
+const [mostProductiveMonth,mostProductiveMonthCount] = mostActiveFunction(mostProductiveMonthMap)
+const [mostProductiveDay] = mostActiveFunction(mostProductiveDayMap)
+let [mostProductiveDate,mostProductiveDateCount] = mostActiveFunction(mostProductiveDateMap)
 
+console.log(mostProductiveMonth,mostProductiveMonthCount)
+console.log(mostProductiveDay)
+console.log(mostProductiveDate,mostProductiveDateCount)
 
 
 
@@ -139,6 +156,11 @@ for(const item of repoArray)
       firstMerge : firstMerge, 
       maxStarred : maxStarredRepo,
       maxUsedLanguage : maxUsedLanguage || "NA", 
+      mostProductiveMonth : mostProductiveMonth, 
+      mostProductiveMonthCount:mostProductiveMonthCount,
+      mostProductiveDay : mostProductiveDay, 
+      mostProductiveDateCount:mostProductiveDateCount,
+      mostProductiveDate : mostProductiveDate.toLocaleString("en-IN",{year:"numeric",month:"long",day:"numeric"})
     }
   },[response])
   

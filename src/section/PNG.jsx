@@ -1,3 +1,4 @@
+import { getNextInternalQuery } from "next/dist/server/request-meta";
 
 
 export default function PNG({generalInformation})
@@ -17,6 +18,9 @@ export default function PNG({generalInformation})
         <h1>First merge : {generalInformation.firstMerge}</h1>
         <h1>Max Starred : {generalInformation.maxStarred}</h1>
         <h1>Max used Language : {generalInformation.maxUsedLanguage}</h1>
+        <h1>Max productive month : {`${generalInformation.mostProductiveMonth} (${generalInformation.mostProductiveMonthCount})`}</h1>
+        <h1>Max productive date : {`${generalInformation.mostProductiveDate} (${generalInformation.mostProductiveDateCount})`}</h1>
+        <h1>Most productive day : {generalInformation.mostProductiveDay}</h1>
         <img src={generalInformation.contributionsGraph} className="opacity-[1]" alt="Name Your Github chart"/>
 
     </div>

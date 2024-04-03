@@ -112,11 +112,13 @@ export const responseAtomFamily = atomFamily({
                             }
                             contributionCalendar {
                               totalContributions
-                              months {
-                                name
-                                totalWeeks
-                                firstDay
-                                year
+                              weeks {
+                                contributionDays {
+                                  contributionCount
+                                  date
+                                  contributionLevel
+                                  
+                                }
                               }
                             }
                           }
@@ -124,65 +126,14 @@ export const responseAtomFamily = atomFamily({
                       }`}
 
 
-              const contributionsBody = {
-                query : `query{
-                    user(login: "${id.username}") {
-                      contributionsCollection(
-                        from: "${id.startDate}"
-                        to: "${id.endDate}"
-                      ){
-                        totalCommitContributions
-                        totalRepositoryContributions
-                        totalIssueContributions
-                        totalPullRequestContributions
-                        commitContributionsByRepository {
-                          repository {
-                            name
-                          }
-                        }
-                        pullRequestContributions(first: 100, after:"${pullRequestEndCursor}") {
-                          edges {
-                            node {
-                              pullRequest {
-                                title
-                                createdAt
-                                mergedAt
-                                merged
-                              }
-                            }
-                          }
-                          pageInfo{
-                            hasNextPage
-                            endCursor
-                          }
-                        }
-                        issueContributions(first: 100, after:"${issueEndCursor}") {
-                          edges {
-                            node {
-                              issue {
-                                title
-                                createdAt
-                              }
-                            }
-                          }
-                         
-                          pageInfo{
-                            hasNextPage
-                            endCursor
-                          }
-
-                        }
-                      }
-                    }
-                  }`
-              }
+            
               const headersBody = {
                 headers : {
                 "Content-Type" : "application/json",
                 Authorization : `Bearer ${token}`
                 }
               }
-      res =(!id.startDate || !id.endDate)?await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) : await axios.post(`https://api.github.com/graphql`,JSON.stringify(contributionsBody),headersBody)
+      res =await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) 
                 console.log(res.data);
              if(pullRequestHasNextPage)
                   {
@@ -193,7 +144,7 @@ export const responseAtomFamily = atomFamily({
                     pullRequestHasNextPage = res.data.data.user.contributionsCollection.pullRequestContributions.pageInfo.hasNextPage
                   }
                   
-              if(repoHasNextPage && !id.startDate && !id.endDate)
+              if(repoHasNextPage)
               {
                 allRepo = allRepo.concat(res.data.data.user.repositories.edges)
 
