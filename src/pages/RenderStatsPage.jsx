@@ -1,5 +1,6 @@
 import Card from "../component/Card"
 import { GeneralStats } from "../Stats/GeneralStats";
+import Loader from "../component/Loader";
 import {  useRecoilValue} from "recoil";
 import Topbar from "../section/Topbar";
 import { responseAtomFamily} from "../store/APIResponse";
@@ -40,13 +41,14 @@ export default function RenderStatsPage()
   let merged, firstMerge 
   if(pullRequestArray.length)
   {
-    merged = pullRequestArray.filter((item)=>(item.node?.pullRequest?.merged)).length
- 
-   firstMerge = new Date(pullRequestArray[pullRequestArray.length-1].node?.pullRequest?.createdAt).toLocaleString("en-IN");
+   const mergedArray = pullRequestArray.filter((item)=>(item.node?.pullRequest?.merged))
+    merged = mergedArray.length 
+    console.log(mergedArray)
+   firstMerge = new Date(mergedArray[mergedArray.length-1].node?.pullRequest?.mergedAt).toLocaleString("en-IN",{year : "numeric" , month : "long", day : "numeric"});
   }
   else 
   {
-    merged = 0;
+    if(!merged)
     firstMerge = "Invalid"
   }
 
@@ -89,7 +91,7 @@ for(const item of repoArray)
   }
   return [maxKey,maxValue]; 
  }
- const maxUsedLanguage = mostActiveFunction(languageMap); 
+ const [maxUsedLanguage] = mostActiveFunction(languageMap); 
  console.log(maxUsedLanguage || "NA")
  
 // Most productive month 
@@ -141,7 +143,7 @@ console.log(mostProductiveDate,mostProductiveDateCount)
     return {
       username : username, 
       contributions : response.contributionsCollection.contributionCalendar.totalContributions,
-      contributionsGraph : `https://ghchart.rshah.org/D6589F/${username}`,
+      contributionsGraph : `https://ghchart.rshah.org/0ea62c/${username}`,
       imageURL : response.avatarUrl,
       follower : response.followers.totalCount , 
       following : response.following.totalCount , 
@@ -152,7 +154,7 @@ console.log(mostProductiveDate,mostProductiveDateCount)
       numberOfPullRequests : pullRequests, 
       numberOfCommits : commits, 
       numberOfIssues : issues, 
-      merged : merged, 
+      merged : merged || 0, 
       firstMerge : firstMerge, 
       maxStarred : maxStarredRepo,
       maxUsedLanguage : maxUsedLanguage || "NA", 
@@ -166,15 +168,16 @@ console.log(mostProductiveDate,mostProductiveDateCount)
   
   if(response)
   return(
-    <div className="renderStatsPage flex pb-10 items-center gap-10 flex-col pt-0">
+    <div className="renderStatsPage  flex pb-10 items-center gap-10 flex-col pt-0 overflow-auto">
       <Topbar/>  
       <PNG generalInformation={generalInformation}/>
-        <Picture url={generalInformation.imageURL}/>
+      
+        {/* <Picture url={generalInformation.imageURL}/>
         <div className="text-white w-[75%] flex flex-col items-center">
         <h2 className="text-xl pb-2">{`${generalInformation.name}${author()}`}</h2>
         <p className="text-center">{generalInformation.bio}</p>
         </div>
-      <Card cardContent={<GeneralStats generalInformation={generalInformation}/>}/>
+      <Card cardContent={<GeneralStats generalInformation={generalInformation}/>}/> */}
       
     </div>
     )

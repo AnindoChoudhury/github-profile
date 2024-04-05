@@ -8,9 +8,14 @@ export default function Topbar()
     {   
         navigate("/");
     }
+    const download = ()=>
+    {
+        console.log("download")
+    }
     return(
-        <div className="w-full mt-0 h-[4rem] p-5">
+        <div className="w-full mt-0 h-[5rem] flex justify-between items-center p-4">
         <Button text="Home" handleSubmit={handleHome} primaryColor="bg-red-700" hoverColor="dark:hover:bg-red-900"/>
+        <Button text="Download" handleSubmit={download} primaryColor="bg-red-700" hoverColor="dark:hover:bg-red-900"/>
         </div>
     )
 }

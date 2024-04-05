@@ -6,13 +6,14 @@ import { RecoilRoot } from "recoil"
 import UsernameContextProvider from "./context/UsernameContextProvider"
 const RenderStatsPage = lazy(()=>import("./pages/RenderStatsPage"))
 const InputPage = lazy(()=>import("./pages/InputPage"))
+import Loader from "./component/Loader"
 export default function App()
 {
   return(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={
-            <Suspense fallback="loading...">
+            <Suspense fallback={<Loader/>}>
                <RecoilRoot>
                   <UsernameContextProvider>
                   <InputPage/>
@@ -21,7 +22,7 @@ export default function App()
                </Suspense>}>
             </Route>
             <Route path="/stats" element={
-               <Suspense fallback="loading stats page...">
+               <Suspense fallback={<Loader/>}>
                  <RecoilRoot>
                   <UsernameContextProvider>
                       <RenderStatsPage/>
