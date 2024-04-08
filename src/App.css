@@ -18,9 +18,9 @@ body
 }
 .renderStatsPage
 { 
-    background: rgb(14,92,59);
-    background: linear-gradient(180deg, rgba(38,75,59,1)0%, rgba(0,0,0,1)40%);
-    min-height: 200vh;
+  background: rgb(34,195,166);
+  background: linear-gradient(180deg, rgb(41, 43, 3) 0%,  rgba(0,0,0,1) 63%);
+  min-height: 200vh;
 }
 
 .png
