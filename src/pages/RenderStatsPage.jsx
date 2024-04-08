@@ -1,9 +1,9 @@
 import { useRecoilValue } from "recoil";
-import Topbar from "../section/Topbar";
 import { responseAtomFamily } from "../store/APIResponse";
 import { useContext, useEffect, useMemo } from "react";
 import UsernameContext from "../context/UsernameContext";
 import PNG from "../section/PNG";
+import TopNavBar from "../section/TopNavBar";
 export default function RenderStatsPage() {
   const { username } = useContext(UsernameContext);
   const response =
@@ -188,14 +188,14 @@ if(response)
   
     return (
       <div className="renderStatsPage  flex pb-10 items-center gap-10 flex-col pt-0 overflow-auto">
-        <Topbar />
+        <TopNavBar />
         <PNG generalInformation={generalInformation} />
       </div>
     );
 }
   return (
     <div className="h-[100vh]">
-      <Topbar/>
+      <TopNavBar/>
       <div className="flex justify-center text-xl h-[80vh] items-center">
           No such username
       </div>

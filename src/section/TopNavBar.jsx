@@ -1,6 +1,6 @@
 import { Button } from "../component/Input"
 import { useNavigate } from "react-router-dom"
-export default function Topbar()
+export default function TopNavBar()
 {
    
     const navigate = useNavigate();
