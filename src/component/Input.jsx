@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom"
-import { useCallback,memo,useRef,useContext } from "react"
+import { useCallback,memo,useRef,useContext, useEffect } from "react"
 import UsernameContext from "../context/UsernameContext"
 export function Input()
 {
@@ -10,6 +10,10 @@ export function Input()
     const handleSubmit = useCallback(()=>
     {
         setUsername(inputRef.current.value)
+        // useEffect(()=>
+        // {
+        //     window.localStorage.setItem("username",username)
+        // },[username])
         // Wrapping it in async function, so that the setUsername resolves first 
         setTimeout(()=>
         {   

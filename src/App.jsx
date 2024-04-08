@@ -13,7 +13,7 @@ export default function App()
     <BrowserRouter>
         <Routes>
             <Route path="/" element={
-            <Suspense fallback={<Loader/>}>
+            <Suspense fallback={<Loader text="Please wait"/>}>
                <RecoilRoot>
                   <UsernameContextProvider>
                   <InputPage/>
@@ -22,7 +22,7 @@ export default function App()
                </Suspense>}>
             </Route>
             <Route path="/stats" element={
-               <Suspense fallback={<Loader/>}>
+               <Suspense fallback={<Loader text="Loading Statistics"/>}>
                  <RecoilRoot>
                   <UsernameContextProvider>
                       <RenderStatsPage/>
