@@ -1,7 +1,5 @@
 import {atomFamily, selectorFamily} from "recoil"
 import axios from "axios"
-import {token} from "../../config.js"
-
 export const responseAtomFamily = atomFamily({
     key : "responseAtomFamily",
     default : selectorFamily({
@@ -130,7 +128,7 @@ export const responseAtomFamily = atomFamily({
               const headersBody = {
                 headers : {
                 "Content-Type" : "application/json",
-                Authorization : `Bearer ${token}`
+                Authorization : `Bearer ${import.meta.env.VITE_Token}`
                 }
               }
       res =await axios.post(`https://api.github.com/graphql`,JSON.stringify(overviewBody),headersBody) 
